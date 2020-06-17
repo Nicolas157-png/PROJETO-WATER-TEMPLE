@@ -1,0 +1,49 @@
+en
+config t
+hostname RT-02
+banner motd "ACESSO APENAS PARA O DEPTO. DE TI DA WATER TEMPLE LTDA."
+username linkdoti privilege 15 secret hey-listen-3*
+ip domain name watertemple.local
+crypto key generate rsa general-keys modulus 1024
+line vty 0 15
+transport input ssh
+login local
+exit
+line console 0
+login local
+exit
+crypto key generate rsa
+security password min-leght 8
+login block for 180 attempts 3 within 60
+int g0/1
+shutdown
+int s0/0/1
+shutdown
+interface
+int g0/0
+no shutdown
+exit
+int g0/0.10
+encapsulation dot1q 10
+ip add 172.16.1.1 255.255.255.224
+ip helper-address 172.16.1.114
+ipv6 add  2001:db8:1:10::1/64 
+int g0/0.20
+encapsulation dot1q 20
+ip add 172.16.1.110 255.255.255.240
+ip helper-address 172.16.1.114
+ipv6 add  2001:db8:1:20::1/64 
+int g0/0.30
+encapsulation dot1q 30
+ip add 172.16.1.118 255.255.255.30
+ip helper-address 172.16.1.114
+ipv6 add  2001:db8:1:30::1/64 
+int s0/0/0
+ip add 189.100.0.2 255.255.255.252
+ipv6 add 2001:db8:faca::1/64
+no shutdown
+exit
+ip route 172.16.1.0 255.255.255.0 189.100.0.1
+ipv6 unicast-routing
+ipv6 route 2001:db8:1::/64 2001:db8:faca::0
+do wr
